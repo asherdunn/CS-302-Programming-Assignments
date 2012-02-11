@@ -94,14 +94,14 @@ void Image::getImageInfo(int &rows, int &cols, int &max)
 }
 //**********************************************
 //Function name:getPixelVal
-//Return Type:	int
+//Return Type:	Void
 //Purpose:	Return the value of the pixel
 //		at the specified coordinates.
 //		Throws an OUT-OF-BOUNDS
 //		exception if the coordinates
 //		fall outside the image.	
 //*********************************************
-int Image::getPixelVal(int rowNum, int colNum)
+void Image::getPixelVal(int rowNum, int colNum, int &retVal)
 {
 	if(rowNum > N || colNum > M)
 	{
@@ -117,7 +117,7 @@ int Image::getPixelVal(int rowNum, int colNum)
 	}
 	else
 	{
-		return pixelVal[rowNum][colNum];
+		retVal = pixelVal[rowNum][colNum];
 	}
 }
 //**********************************************
@@ -170,8 +170,12 @@ void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, oldImage)
 	}
 	else
 	{
-		
-void Image::writeImage(char *fname, Image &image)
+		for(int subCount = ULrows; subCount < LRrows; subCount++)
+		{
+			for(int subColCount = ULcols; subColCount < LRcols; subColCount++)
+			{
+					
+void writeImage(char *fname, Image &image)
 {
  int i, j;
  int N, M, Q;
@@ -216,7 +220,7 @@ void Image::writeImage(char *fname, Image &image)
 
 }
 
-void Image::readImage(char *fname, Image &image)
+void readImage(char *fname, Image &image)
 {
  int i, j;
  int N, M, Q;
@@ -239,3 +243,40 @@ void Image::readImage(char *fname, Image &image)
       cout << "Image " << fname << " is not PGM" << endl;
       exit(1);
  }
+
+ifp.getline(header,100,'\n');
+ while(header[0]=='#')
+   ifp.getline(header,100,'\n');
+
+ M=strtol(header,&ptr,0);
+ N=atoi(ptr);
+
+ ifp.getline(header,100,'\n');
+ Q=strtol(header,&ptr,0);
+
+ charImage = (unsigned char *) new unsigned char [M*N];
+
+ ifp.read( reinterpret_cast<char *>(charImage), (M*N)*sizeof(unsigned char));
+
+ if (ifp.fail()) {
+   cout << "Image " << fname << " has wrong size" << endl;
+   exit(1);
+ }
+
+ ifp.close();
+
+ //
+ // Convert the unsigned characters to integers
+ //
+
+ int val;
+
+ for(i=0; i<N; i++)
+   for(j=0; j<M; j++) {
+     val = (int)charImage[i*M+j];
+     image.setPixelVal(i, j, val);     
+   }
+
+ delete [] charImage;
+
+}
