@@ -162,10 +162,18 @@ void Image::setPixelVal(int rowSpec, int colSpec, int value)
 //		the coordinates falls outside
 //		the range of the image.
 //*********************************************
-void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, oldImage)
+void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, &oldImage)
 {
 	if(ULrows > N || ULcols > M || LRrows > N || LRcols > M)
 	{
+		//************************************
+		//If the coordinates are outside the
+		//image, this error will occur. This 
+		//function, when called, needs to be
+		//placed in a try/catch block in 
+		//order to output the error to the
+		//screen.
+		//************************************
 		throw "ERROR: OUT-OF-BOUNDS";
 	}
 	else
@@ -176,20 +184,25 @@ void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, oldImage)
 		{
 			tempPixel[i] = new int[(LRcols - ULcols)];
 		}
+		//*******************************************************
+		//This double nested for loop sorts through the old image
+		//and finds the coordinates of the subimage and copies
+		//that to the temporary image array.
+		//*******************************************************
 		for(int subCount = ULrows; subCount < LRrows; subCount++)
 		{
 			
 			for(int subColCount = ULcols; subColCount < LRcols; subColCount++)
 			{
-				tempPixel[subCount][subColCount] = pixelVal[subCount][subColCount];
+				tempPixel[subCount][subColCount] = oldImage.pixelVal[subCount][subColCount];
 			}
 		}
 		for(int delRow = 0; delRow < N; delRow++)
 		{
-			delete [] pixelVal[delRow];
+			delete [] oldImage.pixelVal[delRow];
 		}
-		delete [] pixelVal;
-		pixelVal = tempPixel;
+		delete [] oldImage.pixelVal;
+		oldImage.pixelVal = tempPixel;
 	}
 }
 //**********************************************
@@ -219,7 +232,30 @@ int Image::meanGray()
 //*********************************************
 void Image::enlargeImage(int sFactor, Image &eImage)
 {
-			
+	int **eTempPixel;
+	tempPixel = new int *[(eImage.N * sFactor)];
+	for(int i = 0; i < (LRcols - ULcols); i++)
+	{
+		tempPixel[i] = new int[(eImage.M * sFactor)];
+	}
+	for(int oriRowCount = 0; oriRowCount < eImage.N; oriRowCount++)
+	{
+		for(int oriColCount = 0; oriColCount < eImage.M; oriColCount++)
+		{
+			for(int scaleCount = 0; scaleCount < sFactor; scaleCount++)	
+			{
+				eTempPixel[oriRowCount][(oriColCount + sFactor)] = eImage.pixelVal[oriRowCount][oriColCount];
+			}
+		}
+	}
+	for(int delRow = 0; delRow < N; delRow++)
+	{
+		delete [] eImage.pixelVal[delRow];
+	}
+	delete [] eImage.pixelVal;
+	eImage.pixelVal = eTempPixel;
+}
+		
 void writeImage(char *fname, Image &image)
 {
  int i, j;
@@ -323,5 +359,52 @@ ifp.getline(header,100,'\n');
    }
 
  delete [] charImage;
+
+}
+
+void readImageHeader(char *fname, int& N, int& M, int& Q, bool& type)
+{
+ int i, j;
+ unsigned char *charImage;
+ char header [100], *ptr;
+ ifstream ifp;
+
+ ifp.open(fname, ios::in | ios::binary);
+
+ if (!ifp) {
+   cout << "Can't read image: " << fname << endl;
+   exit(1);
+ }
+
+ // read header
+
+ type = false; // PGM
+
+ ifp.getline(header,100,'\n');
+ if ( (header[0] == 80) &&  /* 'P' */
+      (header[1]== 53) ) {  /* '5' */
+      type = false;
+ }
+ else if ( (header[0] == 80) &&  /* 'P' */
+      (header[1] == 54) ) {        /* '6' */
+      type = true;
+ } 
+ else {
+   cout << "Image " << fname << " is not PGM or PPM" << endl;
+   exit(1);
+ }
+
+ifp.getline(header,100,'\n');
+ while(header[0]=='#')
+   ifp.getline(header,100,'\n');
+
+ M=strtol(header,&ptr,0);
+ N=atoi(ptr);
+
+ ifp.getline(header,100,'\n');
+
+ Q=strtol(header,&ptr,0);
+
+ ifp.close();
 
 }
