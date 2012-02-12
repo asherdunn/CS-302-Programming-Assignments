@@ -419,7 +419,7 @@ ifp.getline(header,100,'\n');
 
 }
 
-void readImageHeader(char *fname, int& N, int& M, int& Q, bool& type)
+void readImageHeader(char fname[], int& N, int& M, int& Q, bool& type)
 {
  int i, j;
  unsigned char *charImage;

@@ -23,10 +23,6 @@ int main(int argc, char *argv[])
 	
 	// Read the specified image
 	readImage(argv[1], image);
-	
-	
-	
-	writeImage(argv[2], );
 
 	return (1);
 }
