@@ -43,7 +43,7 @@ Image::Image(int rows, int cols, int grays)
 	pixelVal = new int *[N];
 	for(int i = 0; i < M; i++)
 	{
-		pixelVal[i] = new int[m];
+		pixelVal[i] = new int[M];
 	}
 }
 //**********************************************
@@ -183,7 +183,7 @@ void Image::setPixelVal(int rowSpec, int colSpec, int value)
 //		the coordinates falls outside
 //		the range of the image.
 //*********************************************
-void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, &oldImage)
+void Image::getSubImage(int ULrows,int ULcols,int LRrows,int LRcols,Image &oldImage)
 {
 	if(ULrows > N || ULcols > M || LRrows > N || LRcols > M)
 	{
@@ -281,10 +281,10 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 	//multiplying the columns and rows of the original
 	//image by the scaling factor.
 	//**************************************************
-	tempPixel = new int *[(eImage.N * sFactor)];
-	for(int i = 0; i < (LRcols - ULcols); i++)
+	eTempPixel = new int *[(eImage.N * sFactor)];
+	for(int i = 0; i < (eImage.N * sFactor); i++)
 	{
-		tempPixel[i] = new int[(eImage.M * sFactor)];
+		eTempPixel[i] = new int[(eImage.M * sFactor)];
 	}
 	//*************************************************************
 	//The first two loops of this triple loop sort through the 
