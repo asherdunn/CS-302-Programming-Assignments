@@ -34,6 +34,12 @@ Image::Image(int rows, int cols, int grays)
 	N = rows;
 	M = cols;
 	Q = grays;
+	//*****************************************************
+	//The 2D array requires a loop in order to fully allocate
+	//the memory for it. One dimension of the array is allocated
+	//outside the loop and then the loop allocates arrays of 
+	//pointers to be given to the first dimension.
+	//******************************************************
 	pixelVal = new int *[N];
 	for(int i = 0; i < M; i++)
 	{
@@ -54,6 +60,11 @@ Image::Image(const Image &copyImage)
 	M = copyImage.M;
 	Q = copyImage.Q;
 	pixelVal = new int *[N];
+	//***************************************************************
+	//The nested for loop allocates rows to the pixelVal array and
+	//fills the individual elements of the array with the copied
+	//pixel values from the passed image.
+	//***************************************************************
 	for(int rowCount = 0; rowCount < N; rowCount++)
 	{
 		pixelVal[rowCount] = new int[M];
@@ -115,6 +126,11 @@ void Image::getPixelVal(int rowNum, int colNum, int &retVal)
 		//************************************
 		throw "ERROR: OUT-OF-BOUNDS";
 	}
+	//****************************************************
+	//If the coordinates given are not out of bounds, the
+	//function sets the retVal variable equal to the 
+	//value of the pixel at the coordinates.
+	//****************************************************
 	else
 	{
 		retVal = pixelVal[rowNum][colNum];
@@ -143,6 +159,11 @@ void Image::setPixelVal(int rowSpec, int colSpec, int value)
 		//************************************
 		throw "ERROR: OUT-OF-BOUNDS";
 	}
+	//****************************************************
+	//If the coordinates given are not out of bounds, the
+	//function sets the pixel value at the coordinates
+	//equal to the new value.
+	//****************************************************
 	else
 	{
 		pixelVal[rowSpec][colSpec] = value;
@@ -179,6 +200,12 @@ void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, &oldImage)
 	else
 	{
 		int **tempPixel;
+		//*******************************************************
+		//Creating a temporary array to store the subimage. The
+		//temporary array is made to be the exact size of the 
+		//subimage, using the difference between the coordinates
+		//passed to the function to calculate the size. 
+		//*******************************************************
 		tempPixel = new int *[(LRrows - ULrows)];
 		for(int i = 0; i < (LRcols - ULcols); i++)
 		{
@@ -197,6 +224,11 @@ void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, &oldImage)
 				tempPixel[subCount][subColCount] = oldImage.pixelVal[subCount][subColCount];
 			}
 		}
+		//*******************************************************
+		//This for loop deallocates the subimage and then sets
+		//the pixelVal pointer to the new image array before
+		//the funciton ends.
+		//*******************************************************
 		for(int delRow = 0; delRow < N; delRow++)
 		{
 			delete [] oldImage.pixelVal[delRow];
@@ -214,6 +246,10 @@ void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, &oldImage)
 int Image::meanGray()
 {
 	int mean;
+	//*************************************************************
+	//This double nested for loop sums all of the pixel values
+	//in the image into a single integer value.
+	//*************************************************************
 	for(int rowGray = 0; rowGray < N; rowGray++)
 	{
 		for(int colGray = 0; colGray < M; colGray++)
@@ -221,6 +257,12 @@ int Image::meanGray()
 			mean = mean + pixelVal[rowGray][colGray];
 		}
 	}
+	//**************************************************************
+	//Calculating the mean by dividing the summed pixel values by
+	//the number of pixels, calculated by multiplying the number
+	//of columns by the number of rows before dividing the mean
+	//by that number.
+	//**************************************************************
 	mean = mean / (M * N);
 	return mean;
 }
@@ -233,11 +275,24 @@ int Image::meanGray()
 void Image::enlargeImage(int sFactor, Image &eImage)
 {
 	int **eTempPixel;
+	//**************************************************
+	//This loop allocates the memory needed for the 
+	//temporary pixel array, calculated by
+	//multiplying the columns and rows of the original
+	//image by the scaling factor.
+	//**************************************************
 	tempPixel = new int *[(eImage.N * sFactor)];
 	for(int i = 0; i < (LRcols - ULcols); i++)
 	{
 		tempPixel[i] = new int[(eImage.M * sFactor)];
 	}
+	//*************************************************************
+	//The first two loops of this triple loop sort through the 
+	//original image, incrementing along it and copying the values.
+	//The third loop takes the values and places them into the new
+	//array of the enlarged image by copying the pixels a number
+	//of times equal to the scaling factor.
+	//************************************************************
 	for(int oriRowCount = 0; oriRowCount < eImage.N; oriRowCount++)
 	{
 		for(int oriColCount = 0; oriColCount < eImage.M; oriColCount++)
@@ -248,6 +303,8 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 			}
 		}
 	}
+	//*************************************************************
+	//Deallocating 
 	for(int delRow = 0; delRow < N; delRow++)
 	{
 		delete [] eImage.pixelVal[delRow];
