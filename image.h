@@ -30,6 +30,7 @@ private:
 
 	void readImage(char *, Image &);
 	void writeImage(char *, Image &);
+	void menu();
 #endif
 	
 	

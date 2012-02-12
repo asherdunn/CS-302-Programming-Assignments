@@ -170,11 +170,56 @@ void Image::getSubImage(ULrows, ULcols, LRrows, LRcols, oldImage)
 	}
 	else
 	{
+		int **tempPixel;
+		tempPixel = new int *[(LRrows - ULrows)];
+		for(int i = 0; i < (LRcols - ULcols); i++)
+		{
+			tempPixel[i] = new int[(LRcols - ULcols)];
+		}
 		for(int subCount = ULrows; subCount < LRrows; subCount++)
 		{
+			
 			for(int subColCount = ULcols; subColCount < LRcols; subColCount++)
 			{
-					
+				tempPixel[subCount][subColCount] = pixelVal[subCount][subColCount];
+			}
+		}
+		for(int delRow = 0; delRow < N; delRow++)
+		{
+			delete [] pixelVal[delRow];
+		}
+		delete [] pixelVal;
+		pixelVal = tempPixel;
+	}
+}
+//**********************************************
+//Function name:meanGray
+//Return Type:	int
+//Purpose:	Sums and calculates the mean 
+//		gray level value of the image.
+//*********************************************
+int Image::meanGray()
+{
+	int mean;
+	for(int rowGray = 0; rowGray < N; rowGray++)
+	{
+		for(int colGray = 0; colGray < M; colGray++)
+		{
+			mean = mean + pixelVal[rowGray][colGray];
+		}
+	}
+	mean = mean / (M * N);
+	return mean;
+}
+//**********************************************
+//Function name:elargeImage
+//Return Type:	Void
+//Purpose:	Enlarges the base image by a 
+//		scaling factor, sFactor.
+//*********************************************
+void Image::enlargeImage(int sFactor, Image &eImage)
+{
+			
 void writeImage(char *fname, Image &image)
 {
  int i, j;
