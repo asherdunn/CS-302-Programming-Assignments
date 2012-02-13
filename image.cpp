@@ -313,7 +313,7 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 	eImage.pixelVal = eTempPixel;
 }
 		
-void writeImage(char *fname, Image &image)
+void writeImage(char fname[], Image &image)
 {
  int i, j;
  int N, M, Q;
@@ -358,7 +358,7 @@ void writeImage(char *fname, Image &image)
 
 }
 
-void readImage(char *fname, Image &image)
+void readImage(char fname[], Image &image)
 {
  int i, j;
  int N, M, Q;

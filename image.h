@@ -28,8 +28,8 @@ private:
 	int **pixelVal;
 };
 
-	void readImage(char *, Image &);
-	void writeImage(char *, Image &);
+	void readImage(char[], Image &);
+	void writeImage(char[], Image &);
 	void readImageHeader(char[], int &, int &, int &, bool &);
 	void menu();
 #endif
