@@ -15,9 +15,9 @@ using namespace std;
 //*********************************************
 Image::Image()
 {
-	N = 0;
-	M = 0;
-	Q = 0;
+	cols = 0;
+	rows = 0;
+	grayMax = 0;
 	pixelVal = NULL;
 }
 //**********************************************
@@ -29,21 +29,25 @@ Image::Image()
 //		to be used by the class for
 //		image storage.
 //*********************************************
-Image::Image(int rows, int cols, int grays)
+Image::Image(int row, int col, int grays)
 {
-	N = rows;
-	M = cols;
-	Q = grays;
+	rows = row;
+	cols = col;
+	grayMax = grays;
 	//*****************************************************
 	//The 2D array requires a loop in order to fully allocate
 	//the memory for it. One dimension of the array is allocated
 	//outside the loop and then the loop allocates arrays of 
 	//pointers to be given to the first dimension.
 	//******************************************************
-	pixelVal = new int *[N];
-	for(int i = 0; i < M; i++)
+	pixelVal = new int *[rows];
+	for(int colCount = 0; colCount < cols; colCount++)
 	{
-		pixelVal[i] = new int[M];
+		pixelVal[colCount] = new int[cols];
+		for(int rowCount = 0; rowCount < rows; rowCount++)
+		{
+			pixelVal[colCount][rowCount] = 0;
+		}
 	}
 }
 //**********************************************
@@ -56,19 +60,19 @@ Image::Image(int rows, int cols, int grays)
 //*********************************************
 Image::Image(const Image &copyImage)
 {
-	N = copyImage.N;
-	M = copyImage.M;
-	Q = copyImage.Q;
-	pixelVal = new int *[N];
+	cols = copyImage.cols;
+	rows = copyImage.rows;
+	grayMax = copyImage.grayMax;
+	pixelVal = new int *[rows];
 	//***************************************************************
 	//The nested for loop allocates rows to the pixelVal array and
 	//fills the individual elements of the array with the copied
 	//pixel values from the passed image.
 	//***************************************************************
-	for(int rowCount = 0; rowCount < N; rowCount++)
+	for(int colCount = 0; colCount < cols; colCount++)
 	{
-		pixelVal[rowCount] = new int[M];
-		for(int colCount = 0; colCount < M; colCount++)
+		pixelVal[colCount] = new int[cols];
+		for(int rowCount = 0; rowCount < rows; rowCount++)
 		{
 			pixelVal[rowCount][colCount] = copyImage.pixelVal[rowCount][colCount];
 		}
@@ -82,9 +86,9 @@ Image::Image(const Image &copyImage)
 //**************************************************	
 Image::~Image()
 {
-	for(int delRow = 0; delRow < N; delRow++)
+	for(int delCol = 0; delRow < cols; delCol++)
 	{
-		delete [] pixelVal[delRow];
+		delete [] pixelVal[delCol];
 	}
 	delete [] pixelVal;
 }
@@ -99,9 +103,9 @@ Image::~Image()
 //*********************************************		
 void Image::getImageInfo(int &rows, int &cols, int &max)
 {
-	rows = N;
-	cols = M;
-	max = Q;
+	rows = cols;
+	cols = rows;
+	max = grayMax;
 }
 //**********************************************
 //Function name:getPixelVal
@@ -114,7 +118,7 @@ void Image::getImageInfo(int &rows, int &cols, int &max)
 //*********************************************
 void Image::getPixelVal(int rowNum, int colNum, int &retVal)
 {
-	if(rowNum > N || colNum > M)
+	if(colNum > cols || rowNum > rows)
 	{
 		//************************************
 		//If the coordinates are outside the
@@ -147,7 +151,9 @@ void Image::getPixelVal(int rowNum, int colNum, int &retVal)
 //*********************************************
 void Image::setPixelVal(int rowSpec, int colSpec, int value)
 {
-	if(rowSpec > N || colSpec > M)
+	cout << rowSpec;
+	cout << cols;
+	if(colSpec > cols || rowSpec > rows || rowSpec < 0 || colSpec < 0)
 	{
 		//************************************
 		//If the coordinates are outside the
@@ -157,7 +163,7 @@ void Image::setPixelVal(int rowSpec, int colSpec, int value)
 		//order to output the error to the
 		//screen.
 		//************************************
-		throw "ERROR: OUT-OF-BOUNDS";
+		cout << "ERROR: OUT-OF-BOUNDS";
 	}
 	//****************************************************
 	//If the coordinates given are not out of bounds, the
@@ -185,7 +191,7 @@ void Image::setPixelVal(int rowSpec, int colSpec, int value)
 //*********************************************
 void Image::getSubImage(int ULrows,int ULcols,int LRrows,int LRcols,Image &oldImage)
 {
-	if(ULrows > N || ULcols > M || LRrows > N || LRcols > M)
+	if(ULcols > cols || ULrows > rows || LRcols > cols || LRrows > rows)
 	{
 		//************************************
 		//If the coordinates are outside the
@@ -229,7 +235,7 @@ void Image::getSubImage(int ULrows,int ULcols,int LRrows,int LRcols,Image &oldIm
 		//the pixelVal pointer to the new image array before
 		//the funciton ends.
 		//*******************************************************
-		for(int delRow = 0; delRow < N; delRow++)
+		for(int delRow = 0; delRow < cols; delRow++)
 		{
 			delete [] oldImage.pixelVal[delRow];
 		}
@@ -250,9 +256,9 @@ int Image::meanGray()
 	//This double nested for loop sums all of the pixel values
 	//in the image into a single integer value.
 	//*************************************************************
-	for(int rowGray = 0; rowGray < N; rowGray++)
+	for(int rowGray = 0; rowGray < cols; rowGray++)
 	{
-		for(int colGray = 0; colGray < M; colGray++)
+		for(int colGray = 0; colGray < rows; colGray++)
 		{
 			mean = mean + pixelVal[rowGray][colGray];
 		}
@@ -263,7 +269,7 @@ int Image::meanGray()
 	//of columns by the number of rows before dividing the mean
 	//by that number.
 	//**************************************************************
-	mean = mean / (M * N);
+	mean = mean / (rows * cols);
 	return mean;
 }
 //**********************************************
@@ -281,10 +287,10 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 	//multiplying the columns and rows of the original
 	//image by the scaling factor.
 	//**************************************************
-	eTempPixel = new int *[(eImage.N * sFactor)];
-	for(int i = 0; i < (eImage.N * sFactor); i++)
+	eTempPixel = new int *[(eImage.cols * sFactor)];
+	for(int i = 0; i < (eImage.cols * sFactor); i++)
 	{
-		eTempPixel[i] = new int[(eImage.M * sFactor)];
+		eTempPixel[i] = new int[(eImage.rows * sFactor)];
 	}
 	//*************************************************************
 	//The first two loops of this triple loop sort through the 
@@ -293,9 +299,9 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 	//array of the enlarged image by copying the pixels a number
 	//of times equal to the scaling factor.
 	//************************************************************
-	for(int oriRowCount = 0; oriRowCount < eImage.N; oriRowCount++)
+	for(int oriRowCount = 0; oriRowCount < eImage.cols; oriRowCount++)
 	{
-		for(int oriColCount = 0; oriColCount < eImage.M; oriColCount++)
+		for(int oriColCount = 0; oriColCount < eImage.rows; oriColCount++)
 		{
 			for(int scaleCount = 0; scaleCount < sFactor; scaleCount++)	
 			{
@@ -305,7 +311,7 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 	}
 	//*************************************************************
 	//Deallocating 
-	for(int delRow = 0; delRow < N; delRow++)
+	for(int delRow = 0; delRow < cols; delRow++)
 	{
 		delete [] eImage.pixelVal[delRow];
 	}
@@ -316,22 +322,22 @@ void Image::enlargeImage(int sFactor, Image &eImage)
 void writeImage(char fname[], Image &image)
 {
  int i, j;
- int N, M, Q;
+ int cols, rows, grayMax;
  unsigned char *charImage;
  ofstream ofp;
 
- image.getImageInfo(N, M, Q);
+ image.getImageInfo(cols, rows, grayMax);
 
- charImage = (unsigned char *) new unsigned char [M*N];
+ charImage = (unsigned char *) new unsigned char [rows*cols];
 
  // convert the integer values to unsigned char
 
  int val;
 
- for(i=0; i<N; i++)
-   for(j=0; j<M; j++) {
+ for(i=0; i<cols; i++)
+   for(j=0; j<rows; j++) {
      image.getPixelVal(i, j, val);
-     charImage[i*M+j]=(unsigned char)val;
+     charImage[i*rows+j]=(unsigned char)val;
    }
 
  ofp.open(fname, ios::out | ios::binary);
@@ -342,10 +348,10 @@ void writeImage(char fname[], Image &image)
  }
 
  ofp << "P5" << endl;
- ofp << M << " " << N << endl;
- ofp << Q << endl;
+ ofp << rows << " " << cols << endl;
+ ofp << grayMax << endl;
 
- ofp.write( reinterpret_cast<char *>(charImage), (M*N)*sizeof(unsigned char));
+ ofp.write( reinterpret_cast<char *>(charImage), (rows*cols)*sizeof(unsigned char));
 
  if (ofp.fail()) {
    cout << "Can't write image " << fname << endl;
@@ -361,7 +367,7 @@ void writeImage(char fname[], Image &image)
 void readImage(char fname[], Image &image)
 {
  int i, j;
- int N, M, Q;
+ int cols, rows, grayMax;
  unsigned char *charImage;
  char header [100], *ptr;
  ifstream ifp;
@@ -386,15 +392,15 @@ ifp.getline(header,100,'\n');
  while(header[0]=='#')
    ifp.getline(header,100,'\n');
 
- M=strtol(header,&ptr,0);
- N=atoi(ptr);
+ rows=strtol(header,&ptr,0);
+ cols=atoi(ptr);
 
  ifp.getline(header,100,'\n');
- Q=strtol(header,&ptr,0);
+ grayMax=strtol(header,&ptr,0);
 
- charImage = (unsigned char *) new unsigned char [M*N];
+ charImage = (unsigned char *) new unsigned char [rows*cols];
 
- ifp.read( reinterpret_cast<char *>(charImage), (M*N)*sizeof(unsigned char));
+ ifp.read( reinterpret_cast<char *>(charImage), (rows*cols)*sizeof(unsigned char));
 
  if (ifp.fail()) {
    cout << "Image " << fname << " has wrong size" << endl;
@@ -408,18 +414,25 @@ ifp.getline(header,100,'\n');
  //
 
  int val;
-
- for(i=0; i<N; i++)
-   for(j=0; j<M; j++) {
-     val = (int)charImage[i*M+j];
-     image.setPixelVal(i, j, val);     
+cout << "before problem" << endl;
+ for(i=0; i<cols; i++)
+   for(j=0; j<rows; j++) {
+     val = (int)charImage[i*rows+j];
+     try
+     {
+     image.setPixelVal(i, j, val); 
+     }  
+	catch (char *exceptionString)
+	{
+	cout << exceptionString;
+	}  
    }
-
+cout << "after problem" << endl;
  delete [] charImage;
 
 }
 
-void readImageHeader(char fname[], int& N, int& M, int& Q, bool& type)
+void readImageHeader(char fname[], int& cols, int& rows, int& grayMax, bool& type)
 {
  int i, j;
  unsigned char *charImage;
@@ -455,12 +468,12 @@ ifp.getline(header,100,'\n');
  while(header[0]=='#')
    ifp.getline(header,100,'\n');
 
- M=strtol(header,&ptr,0);
- N=atoi(ptr);
+ rows=strtol(header,&ptr,0);
+ cols=atoi(ptr);
 
  ifp.getline(header,100,'\n');
 
- Q=strtol(header,&ptr,0);
+ grayMax=strtol(header,&ptr,0);
 
  ifp.close();
 

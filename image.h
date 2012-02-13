@@ -24,7 +24,7 @@ public:
 	Image operator-(const Image &);
 	const Image operator=(const Image &);
 private:
-	int N, M, Q;
+	int rows, cols, grayMax;
 	int **pixelVal;
 };
 
