@@ -12,17 +12,17 @@ using namespace std;
 //*********************************************
 int main(int argc, char *argv[])
 {
-	int M, N, Q; // Parameters of image
+	int rows, cols, grayMax; // Parameters of image
 	bool type;
 	
 // Read the header of specified image
-	readImageHeader(argv[1], N, M, Q, type);
+	readImageHeader(argv[1], cols, rows, grayMax, type);
 	
 // Display image dimensions to user
-	cout << "Image Dimensions: Rows: " << M << "; Columns: " << N << endl;
+	cout << "Image Dimensions: Rows: " << rows << "; Columns: " << cols << endl;
 	
-// Instantiate memory for M by N image
-	Image image(M,N,Q);
+// Instantiate memory for rows by cols image
+	Image image(rows,cols,grayMax);
 
 // Test for functionality
 		
