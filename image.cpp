@@ -29,7 +29,7 @@ Image::Image()
 //		to be used by the class for
 //		image storage.
 //*********************************************
-Image::Image(int row, int col, int grays)
+Image::Image(int col, int row, int grays)
 {
 	rows = row;
 	cols = col;
@@ -40,10 +40,10 @@ Image::Image(int row, int col, int grays)
 	//outside the loop and then the loop allocates arrays of 
 	//pointers to be given to the first dimension.
 	//******************************************************
-	pixelVal = new int *[rows];
+	pixelVal = new int *[cols];
 	for(int colCount = 0; colCount < cols; colCount++)
 	{
-		pixelVal[colCount] = new int[cols];
+		pixelVal[colCount] = new int[rows];
 		for(int rowCount = 0; rowCount < rows; rowCount++)
 		{
 			pixelVal[colCount][rowCount] = 0;
@@ -86,9 +86,10 @@ Image::Image(const Image &copyImage)
 //**************************************************	
 Image::~Image()
 {
-	for(int delCol = 0; delCol < cols; delCol++)
+	cout << "In deconstructor" << endl;
+	for(int delRow = 0; delRow < rows; delRow++)
 	{
-		delete [] pixelVal[delCol];
+		delete [] pixelVal[delRow];
 	}
 	delete [] pixelVal;
 }
@@ -151,8 +152,6 @@ void Image::getPixelVal(int rowNum, int colNum, int &retVal)
 //*********************************************
 void Image::setPixelVal(int rowSpec, int colSpec, int value)
 {
-	cout << rowSpec;
-	cout << cols;
 	if(colSpec > cols || rowSpec > rows || rowSpec < 0 || colSpec < 0)
 	{
 		//************************************
@@ -414,22 +413,12 @@ ifp.getline(header,100,'\n');
  //
 
  int val;
-cout << "before problem" << endl;
  for(i=0; i<cols; i++)
    for(j=0; j<rows; j++) {
      val = (int)charImage[i*rows+j];
-     try
-     {
-     image.setPixelVal(i, j, val); 
-     }  
-	catch (char *exceptionString)
-	{
-	cout << exceptionString;
-	}  
+     image.setPixelVal(i, j, val);  
    }
-cout << "after problem" << endl;
  delete [] charImage;
-
 }
 
 void readImageHeader(char fname[], int& cols, int& rows, int& grayMax, bool& type)
