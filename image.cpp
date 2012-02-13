@@ -86,7 +86,7 @@ Image::Image(const Image &copyImage)
 //**************************************************	
 Image::~Image()
 {
-	for(int delCol = 0; delRow < cols; delCol++)
+	for(int delCol = 0; delCol < cols; delCol++)
 	{
 		delete [] pixelVal[delCol];
 	}
