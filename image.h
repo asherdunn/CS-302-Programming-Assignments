@@ -1,38 +1,24 @@
-#ifndef image_h
-#define image_h
+#ifndef IMAGE_H
+#define IMAGE_H
 
+// a simple example - you would need to add more funtions
 
-class Image
-{
-public:
-	Image();
-	Image(int , int , int);
-	Image(const Image &);
-	~Image();
-	void getImageInfo(int &, int &, int &);
-	void getPixelVal(int, int, int &);
-	void setPixelVal(int, int, int);
-	void getSubImage(int, int, int, int, Image &);
-	int meanGray();
-	void enlargeImage(int, Image &);
-	void shrinkImage(int, Image &);
-	void reflectImage(int, Image &);
-	void translateImage(int, Image &);
-	void rotateImage(int, Image &);
-	void negateImage(Image &);
-	Image operator+(const Image &);
-	Image operator-(const Image &);
-	const Image operator=(const Image &);
-private:
-	int rows, cols, grayMax;
-	int **pixelVal;
+class ImageType {
+ public:
+    ImageType();
+    ImageType(int, int, int);
+	~ImageType();
+    void getImageInfo(int&, int&, int&);
+    void setImageInfo(int, int, int);
+    void setPixelVal(int, int, int);
+    void getPixelVal(int, int, int&);
+    void Threshold (ImageType&);
+ private:
+    int N, M, Q;
+    int **pixelValue;
 };
 
-	void readImage(char[], Image &);
-	void writeImage(char[], Image &);
-	void readImageHeader(char[], int &, int &, int &, bool &);
-	void menu();
+    void readImageHeader(char[], int&, int&, int&, bool&);
+    void readImage(char[], ImageType&);
+    void writeImage(char[], ImageType&);
 #endif
-	
-	
-	
