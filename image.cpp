@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <math.h>
 
 using namespace std;
 
@@ -42,7 +43,6 @@ ImageType::~ImageType()
 		delete [] pixelValue [colCount];
     }
 	delete [] pixelValue;
-
 }
 
 void ImageType::getImageInfo(int& rows, int& cols, int& levels)
@@ -88,6 +88,41 @@ void ImageType::Threshold(ImageType& image)
         image.setPixelVal(i, j, 0);
     }
     
+}
+
+/*ImageType& ImageType::Scale(ImageType& image)
+//{
+//	int pixelV;
+//	float size;
+//  	cout << "Enter multiplier \n";
+//	cin >> size;
+//	// allocate memory for the image array
+//	int MM=int(ceil(M*size));
+//	int NN=int(ceil(N*size));
+//	ImageType imageScaled(NN, MM, Q);
+//	
+//	// enlarge image 
+//	for(int i=0; i<N; i++)
+//    {
+//		for(int j=0; j<M; j++) 
+//        {
+//			image.getPixelVal(i, j, pixelV);
+//			imageScaled.setPixelVal(int(floor(i*size)), int(floor(j*size)), pixelV);
+//
+//		}
+ //   }
+ //   return imageScaled;
+}
+*/
+
+// Overloaded operator functions
+ImageType ImageType::operator = (const ImageType & image)
+{
+	for (int colCount=0; colCount < N; colCount++)
+    {
+		delete [] pixelValue [colCount];
+    }
+	delete [] pixelValue;    
 }
 
 void readImageHeader(char fname[], int& N, int& M, int& Q, bool& type)

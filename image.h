@@ -12,7 +12,10 @@ class ImageType {
     void setImageInfo(int, int, int);
     void setPixelVal(int, int, int);
     void getPixelVal(int, int, int&);
-    void Threshold (ImageType&);
+    void Threshold(ImageType&);
+//    ImageType& Scale(ImageType&);
+    // Overloaded operator functions
+    ImageType operator = (const ImageType &);
  private:
     int N, M, Q;
     int **pixelValue;
